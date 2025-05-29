@@ -95,6 +95,14 @@
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
 
+        // Objek ID-Halaman
+        const pageMap = {
+            "7710": "home1.html",
+            "1000": "home2.html",
+            "5207": "home3.html",
+            "5230": "home4.html"
+        };
+
         // Handle form submission and send login data to Google Apps Script
         function handleLogin(event) {
             event.preventDefault();
@@ -105,7 +113,7 @@
             loadingMessage.style.display = 'block';
             errorMessage.style.display = 'none';  // Hide error message when new login attempt is made
 
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbz5kyQg03Wq3hgj-lUk4mVKHrr4I1vM4CEM7LT-VNW2JF-rW4KXS3-tKhjcIVdPxjfwJQ/exec'; // Ganti dengan URL Web App yang Anda dapatkan dari Google Apps Script
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbz5kyQg03Wq3hgj-lUk4mVKHrr4I1vM4CEM7LT-VNW2JF-rW4KXS3-tKhjcIVdPxjfwJQ/exec'; // Replace with your Google Apps Script URL
             const formData = new FormData();
             formData.append('username', username);
             formData.append('password', password);
@@ -120,8 +128,13 @@
                 loadingMessage.style.display = 'none';
 
                 if (data !== "Username atau password salah") {
-                    // Redirect to the page returned by the Google Apps Script
-                    window.location.href = data; // Redirect to the URL returned by the script (the corresponding page)
+                    // Mapping ID ke halaman
+                    const page = pageMap[data];
+                    if (page) {
+                        window.location.href = page; // Redirect to the page corresponding to the ID
+                    } else {
+                        errorMessage.style.display = 'block';
+                    }
                 } else {
                     // Show error message if login failed
                     errorMessage.style.display = 'block';
