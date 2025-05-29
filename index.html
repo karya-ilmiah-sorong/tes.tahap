@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+        }
+
+        .error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading img {
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <label for="username">Username:</label>
+            <input type="text" id="username" class="input-field" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" class="input-field" required>
+            <button type="submit" id="loginButton">Login</button>
+        </form>
+
+        <div class="error" id="error-message">Username or password is incorrect!</div>
+        <div class="loading" id="loading-message">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Spinner-1s-200px.gif" alt="Loading...">
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <script>
+        const loginButton = document.getElementById('loginButton');
+        const errorMessage = document.getElementById('error-message');
+        const loadingMessage = document.getElementById('loading-message');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+
+        // Handle form submission and send login data to Google Apps Script
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            // Show loading animation
+            loadingMessage.style.display = 'block';
+            errorMessage.style.display = 'none';  // Hide error message when new login attempt is made
+
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbz5kyQg03Wq3hgj-lUk4mVKHrr4I1vM4CEM7LT-VNW2JF-rW4KXS3-tKhjcIVdPxjfwJQ/exec'; // Replace with your Google Apps Script URL
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Hide loading animation
+                loadingMessage.style.display = 'none';
+
+                if (data !== "Username atau password salah") {
+                    // Redirect to the page returned by the Google Apps Script
+                    window.location.href = data; // Redirect to the URL returned by the script (the corresponding page)
+                } else {
+                    // Show error message if login failed
+                    errorMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                // Hide loading animation and show error message
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'There was an error, please try again later.';
+            });
+        }
+    </script>
+</body>
+</html>
